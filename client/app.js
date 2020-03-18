@@ -68,7 +68,7 @@ const sendMessage = event => {
     alert('Fields can\'t be empty!');	 
   } else {
     addMessage(userName, messageContent);
-    socket.emit('message', { author: userName, content: messageContent.length });
+    socket.emit('message', { author: userName, content: messageContent });
   }
 }
 
