@@ -47,20 +47,18 @@ loginForm.addEventListener('submit', loginHandler);
 
 // message form
 
-const addMessage = (author, content) => {
-  const message = document.createElement('li');
-  message.classList.add('message');
-  message.classList.add('message--received');
-
-  if(author === userName) {
-    message.classList.add('message--self');
-  } else {
-    message.innerHTML = `
-    <h3 class="message__author">${ userName === author ? 'You': author }</h3>
-    <div class="message__content">${content}</div>`;
-    messagesList.appendChild(message);
+const addMessage = function(author, content) {
+  const messsage = document.createElement('li');
+  messsage.classList.add('message', 'message--received');
+  if (author === userName) {
+    messsage.classList.add('message--self');
   }
-}
+  messsage.innerHTML = `<h3 class='message__author'>${
+    userName === author ? 'You' : author
+  }</h3>
+<div class='message__content'>${content}</div>`;
+  messagesList.appendChild(messsage);
+};
 
 const sendMessage = event => {
   event.preventDefault();
