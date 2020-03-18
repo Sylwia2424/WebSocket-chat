@@ -1,17 +1,16 @@
 let userName;
-
+const socket = io({
+  autoConnect: false
+});
 const loginForm = document.getElementById('welcome-form');
 const messagesSection = document.getElementById('messages-section');
 const messagesList = document.getElementById('messages-list');
 const addMessageForm = document.getElementById('add-messages-form');
 const userNameInput = document.getElementById('username');
 const messageContentInput = document.getElementById('message-content');
-const socket = io();
-
 messagesSection.classList.remove('show');
 
 socket.on('message',({ author, content }) => { 
-  //socket.on('join' ); 
   console.log(`New message from ${author}: ${content}`);
     addMessage(author, content);
   });
@@ -30,7 +29,6 @@ socket.emit('message', { author: 'Chat Bot', content: 'New user has joined the c
 const loginHandler = event => {
   event.preventDefault();
   userName = userNameInput.value;
-  console.log(userName);
 
   if(userName == null || userName == '') {
     alert('Fields can\'t be empty!');
@@ -60,16 +58,21 @@ const addMessage = function(author, content) {
   messagesList.appendChild(messsage);
 };
 
-const sendMessage = event => {
-  event.preventDefault();
+function sendMessage(e) {
+  e.preventDefault();
+
   let messageContent = messageContentInput.value;
 
   if(!messageContent.length) {
-    alert('Fields can\'t be empty!');	 
-  } else {
-    addMessage(userName, messageContent);
-    socket.emit('message', { author: userName, content: messageContent });
+    alert('You have to type something!');
   }
-}
+  else {
+    addMessage(userName, messageContent);
+    socket.emit('message', { author: userName, content: messageContent })
+    messageContentInput.value = '';
+    
+  }
+  
+};
 
 addMessageForm.addEventListener('submit', sendMessage);

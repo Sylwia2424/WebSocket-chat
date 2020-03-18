@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const socket = require('socket.io');
+
 const app = express();
 const messages = [];	
 let users = [];
@@ -23,11 +24,13 @@ io.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);
 
   socket.on('join', (user) => {
+    newUser = { id: socket.id, user: user };
+
     console.log('New user' + socket.id + 'added!');
-    users.push(user);
-    socket.broadcast.emit('user', user);
+    users.push(newUser);
+    //socket.broadcast.emit('user', user);
     socket.broadcast.emit('join', user);
-    console.log('Oh, ' +  user.author + ' has joined the conversation!');
+    console.log('Oh, ' +  newUser + ' has joined the conversation!');
   });
   socket.on('message', (message) => {
     console.log('Oh, I\'ve got something from ' + socket.id);
