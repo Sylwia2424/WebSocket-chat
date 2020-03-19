@@ -10,9 +10,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname + '/client')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(dirname + '/client/index.html'));
+  res.sendFile(path.join(__dirname + '/client/index.html'));
 });
-
 
 const server = app.listen(8000, () => {
 console.log('Server is running on Port:', 8000)
@@ -24,14 +23,14 @@ io.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);
 
   socket.on('join', (user) => {
-    newUser = { id: socket.id, user: user };
 
     console.log('New user' + socket.id + 'added!');
-    users.push(newUser);
-    //socket.broadcast.emit('user', user);
+    users.push(user);
+    socket.broadcast.emit('user', user);
     socket.broadcast.emit('join', user);
-    console.log('Oh, ' +  newUser + ' has joined the conversation!');
+    console.log('Oh, ' +  user + ' has joined the conversation!');
   });
+
   socket.on('message', (message) => {
     console.log('Oh, I\'ve got something from ' + socket.id);
     messages.push(message);
@@ -39,10 +38,13 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => { 
-    const user = users.find((user) => user.id == socket.id);
-
-    users = users.filter(user => user.id !== socket.id);
-    socket.broadcast.emit('leave', user);
     console.log('Oh, socket ' + socket.id + ' has left');
+    for (let activeUser of users) {
+      if (activeUser.id === socket.id) {
+        const index = users.indexOf(activeUser);
+        users.removeUser(activeUser.id, index);
+        socket.broadcast.emit('leave', activeUser.user);
+      }
+    }
   });
 });
